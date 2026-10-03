@@ -87,11 +87,11 @@
                         <fieldset>
                             <legend>Clock Face Display:</legend>
                             <div>
-                                <input type="radio" id="minutesAndSeconds" name="clockFaceDisplay" value="minutesAndSeconds" />
+                                <input type="radio" name="clockFaceDisplay" value="minutesAndSeconds" />
                                 <label for="minutesAndSeconds">Minutes and Seconds</label>
                             </div>
                             <div>
-                                <input type="radio" id="hoursAndMinutes" name="clockFaceDisplay" value="hoursAndMinutes" checked />
+                                <input type="radio" name="clockFaceDisplay" value="hoursAndMinutes" checked />
                                 <label for="hoursAndMinutes">Hours and Minutes (default)</label>
                             </div>
                         </fieldset>
@@ -105,6 +105,7 @@
     <!-- <script type="text/javascript" src="shuffler2.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.1/seedrandom.min.js"></script>
     <script src="shuffler/generate-words.js"></script>
+    <script src="shuffler/constants.js"></script>
     <!-- <script src="src/util.js"></script> -->
      <script type="importmap">
         {
@@ -128,19 +129,40 @@
             return result;
         }
 
-        function parseOptions() {
+        function getShufflerOptions() {
+            const result = {}
             console.log('parseOptions()')
             const formElement = document.getElementById("shufflerOptions")
             // const submitter = document.getElementById("randomizeButton")
             const formData = new FormData(formElement)
             for (const element of formData) {
-                console.log(element)
+                switch (element.at(0)) {
+                    case 'patcher.list':
+                        if (!('patcher' in result)) {
+                            result.patcher = {}
+                        }
+                        if (!('on' in result.patcher)) {
+                            result.patcher.on = true
+                        }
+                        if (!('list' in result.patcher)) {
+                            result.patcher.list = []
+                        }
+                        result.patcher.list.push(element.at(1))
+                        break
+                    case 'clockFaceDisplay':
+                        if (element.at(1) === 'minutesAndSeconds') {
+                            result.patcher.list.push('showMinutesAndSecondsInClockRoom')
+                        }
+                        break
+                }
             }
+            return result
         }
 
         document.getElementById('randomizeButton')
         .addEventListener('click', () => {
-            parseOptions()
+            const shufflerOptions = getShufflerOptions()
+            console.log('shufflerOptions:', shufflerOptions)
             const seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
             const rng = new Math.seedrandom(seed)
             console.log('rng:', rng())
@@ -165,6 +187,12 @@
                     const bin = new BinPatcher.GameData(buffer)
                     const extractionData = BinPatcher.processBinary(bin).extraction
                     const changesToApply = []
+                    const patcherList = shufflerOptions?.patcher?.list ?? []
+                    console.log('patcherList:', patcherList)
+                    patcherList
+                    .forEach((patchName) => {
+                        changesToApply.push(PATCHES[patchName])
+                    })
                     changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
                     let patchData = BinPatcher.maskNodes(extractionData, 'data')
                     // Apply changes to patch file
