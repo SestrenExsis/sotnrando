@@ -5,7 +5,6 @@
     <body>
         <div>
             <p><input id="bin_file" type="file" accept=".bin"></p>
-            <p><a id="download"></a></p>
             <form id="shufflerOptions">
                 <div id="options">
                 <!--
@@ -100,6 +99,7 @@
                 <br>
             </form>
             <input id="randomizeButton" type="submit" value="Randomize" />
+            <p><a id="downloadLink"></a></p>
         </div>
     </body>
     <!-- <script type="text/javascript" src="shuffler2.js"></script> -->
@@ -203,9 +203,17 @@
                         }
                     })
                     // Convert patch file to PPF
-                    const result = BinPatcher.toPPF(patchData, 'Test')
-                    console.log('PPF', result.length, result)
-                    // return result
+                    const ppfData = BinPatcher.toPPF(patchData, 'Test')
+                    console.log('ppfData.length:', ppfData.length)
+                    // Create link to downloadable PPF
+                    let blobData = new Blob([ppfData], {
+                        type: 'application/octet-binary',
+                    });
+                    let dataURL = window.URL.createObjectURL(blobData);
+                    let link = document.getElementById('downloadLink');
+                    link.innerHTML = 'Download shuffler.ppf';
+                    link.download = "shuffler.ppf";
+                    link.href = dataURL;
                 })
             })
             // .then(() => {
