@@ -4,7 +4,6 @@
     </head>
     <body>
         <div>
-            <p><input id="bin_file" type="file" accept=".bin"></p>
             <form id="shufflerOptions">
                 <div id="options">
                 <!--
@@ -27,7 +26,7 @@
                 -->
                     <div id="div_toggles">
                         <fieldset>
-                            <legend>Toggles:</legend>
+                            <legend>Toggles</legend>
                             <div>
                                 <input name="patcher.list" value="assignUniqueIdToRelicAfterDrawbridge" type="checkbox" checked />
                                 <label for="patcher.list=assignUniqueIdToRelicAfterDrawbridge">Assign Unique ID to Relic After Drawbridge?</label>
@@ -84,26 +83,34 @@
                     </div>
                     <div id="div_clockFaceType">
                         <fieldset>
-                            <legend>Clock Face Display:</legend>
+                            <legend>Clock Face Display</legend>
                             <div>
                                 <input type="radio" name="clockFaceDisplay" value="minutesAndSeconds" />
-                                <label for="minutesAndSeconds">Minutes and Seconds</label>
+                                <label for="minutesAndSeconds">Custom (Minutes and Seconds)</label>
                             </div>
                             <div>
                                 <input type="radio" name="clockFaceDisplay" value="hoursAndMinutes" checked />
-                                <label for="hoursAndMinutes">Hours and Minutes (default)</label>
+                                <label for="hoursAndMinutes">Normal (Hours and Minutes)</label>
                             </div>
                         </fieldset>
                     </div>
                 </div>
                 <br>
             </form>
-            <input id="randomizeButton" type="submit" value="Randomize" />
-            <p><a id="downloadLink"></a></p>
+            <div>
+                <label for="binFile">Choose SOTN BIN file</label>
+                <input id="binFile" type="file" accept=".bin">
+                <p><a id="downloadExtractionLink"></a></p>
+            </div>
+            <div>
+                <input id="generateButton" type="submit" value="Generate" />
+                <p><a id="downloadPPFLink"></a></p>
+            </div>
         </div>
     </body>
     <!-- <script type="text/javascript" src="shuffler2.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.1/seedrandom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@sestren/bin-patcher@1.0.0/dist/bin-patcher.js"></script>
     <script src="shuffler/generate-words.js"></script>
     <script src="shuffler/constants.js"></script>
     <!-- <script src="src/util.js"></script> -->
@@ -115,25 +122,25 @@
             }
         }
      </script>
-    <script src="node_modules/bin-patcher/dist/bin-patcher.js"></script>
     <script type="module">
-        // FUTURE, when it works!!! import * as BinPatcher from 'SOME CDN LINK'
 
         // import {
         //     getSeedName,
         // } from "sotn-shuffler"
 
+        let data = {}
+
         async function digestMessage(data) {
             const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
             const result = new Uint8Array(hashBuffer).toHex()
-            return result;
+            return result
         }
 
         function getShufflerOptions() {
             const result = {}
             console.log('parseOptions()')
             const formElement = document.getElementById("shufflerOptions")
-            // const submitter = document.getElementById("randomizeButton")
+            // const submitter = document.getElementById("generateButton")
             const formData = new FormData(formElement)
             for (const element of formData) {
                 switch (element.at(0)) {
@@ -159,8 +166,34 @@
             return result
         }
 
-        document.getElementById('randomizeButton')
+        document.getElementById('binFile')
+        .addEventListener('change', () => {
+            const selectedFile = document.getElementById('binFile').files[0]
+            const reader = new FileReader()
+            reader
+            .addEventListener('load', () => {
+                const buffer = new Uint8Array(reader.result)
+                console.log('selectedFile.size:', selectedFile.size)
+                digestMessage(buffer)
+                .then((digestHex) => {
+                    console.log('Digest of disc image', digestHex)
+                    const bin = new BinPatcher.GameData(buffer)
+                    data.extraction = BinPatcher.processBinary(bin).extraction
+                    const link = document.getElementById('downloadExtractionLink')
+                    link.innerHTML = 'Download extraction.json'
+                    link.download = "extraction.json"
+                    const blobData = new Blob([JSON.stringify(data.extraction)], {
+                        type: 'text/plain',
+                    })
+                    link.href = window.URL.createObjectURL(blobData)
+                })
+            })
+            reader.readAsArrayBuffer(selectedFile)
+        })
+        
+        document.getElementById('generateButton')
         .addEventListener('click', () => {
+            console.log('data:', data)
             const shufflerOptions = getShufflerOptions()
             console.log('shufflerOptions:', shufflerOptions)
             const seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
@@ -173,62 +206,33 @@
             console.log('seed:', seed)
             // document.getElementById('seed').value = getSeedName(seed)
             // ...
-            const selectedFile = document.getElementById('bin_file').files[0]
-            const reader = new FileReader()
-            reader
-            .addEventListener('load', () => {
-                // ...
-                console.log('load ...')
-                const buffer = new Uint8Array(reader.result)
-                console.log(selectedFile.size)
-                digestMessage(buffer)
-                .then((digestHex) => {
-                    console.log('Digest of disc image', digestHex)
-                    const bin = new BinPatcher.GameData(buffer)
-                    const extractionData = BinPatcher.processBinary(bin).extraction
-                    const changesToApply = []
-                    const patcherList = shufflerOptions?.patcher?.list ?? []
-                    console.log('patcherList:', patcherList)
-                    patcherList
-                    .forEach((patchName) => {
-                        changesToApply.push(PATCHES[patchName])
-                    })
-                    changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
-                    let patchData = BinPatcher.maskNodes(extractionData, 'data')
-                    // Apply changes to patch file
-                    changesToApply
-                    .forEach((changesData) => {
-                        for (const changeData of changesData.changes) {
-                            BinPatcher.applyChange(patchData, changeData)
-                        }
-                    })
-                    // Convert patch file to PPF
-                    const ppfData = BinPatcher.toPPF(patchData, 'Test')
-                    console.log('ppfData.length:', ppfData.length)
-                    // Create link to downloadable PPF
-                    let blobData = new Blob([ppfData], {
-                        type: 'application/octet-binary',
-                    });
-                    let dataURL = window.URL.createObjectURL(blobData);
-                    let link = document.getElementById('downloadLink');
-                    link.innerHTML = 'Download shuffler.ppf';
-                    link.download = "shuffler.ppf";
-                    link.href = dataURL;
-                })
+            const changesToApply = []
+            const patcherList = shufflerOptions?.patcher?.list ?? []
+            console.log('patcherList:', patcherList)
+            patcherList
+            .forEach((patchName) => {
+                changesToApply.push(PATCHES[patchName])
             })
-            // .then(() => {
-            //     // ...
-            //     console.log('then ...')
-            // })
-            // .catch(() => {
-            //     console.log(reader.error);
-            // })
-            // .finally(() => {
-            //     // ...
-            //     console.log('finally ...')
-            // })
-            reader.readAsArrayBuffer(selectedFile)
-        });
-
+            changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
+            let patchData = BinPatcher.maskNodes(data.extraction, 'data')
+            // Apply changes to patch file
+            changesToApply
+            .forEach((changesData) => {
+                for (const changeData of changesData.changes) {
+                    BinPatcher.applyChange(patchData, changeData)
+                }
+            })
+            // Convert patch file to PPF
+            const ppfData = BinPatcher.toPPF(patchData, 'Test')
+            console.log('ppfData.length:', ppfData.length)
+            // Create link to downloadable PPF
+            const link = document.getElementById('downloadPPFLink')
+            link.innerHTML = 'Download shuffler.ppf'
+            link.download = "shuffler.ppf"
+            const blobData = new Blob([ppfData], {
+                type: 'application/octet-binary',
+            })
+            link.href = window.URL.createObjectURL(blobData)
+        })
     </script>
 </html>
