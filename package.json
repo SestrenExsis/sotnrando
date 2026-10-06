@@ -3,10 +3,10 @@
   "version": "26.07.13",
   "description": "This is a romhacking tool to randomize some things about `Castlevania: Symphony of the Night`.",
   "dependencies": {
+    "@sestren/bin-patcher": "1.0.0",
     "colors": "1.4.0",
     "hygen": "6.2.11",
     "seedrandom": "3.0.5",
-    "sestren@bin-patcher": "1.0.0",
     "sotn-shuffler": "file:/run/media/sestren-main/bonus-drive/documents/github.com/SestrenExsis/SOTN-Shuffler",
     "yargs": "17.7.2"
   },

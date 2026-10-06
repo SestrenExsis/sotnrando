@@ -111,8 +111,9 @@
     <!-- <script type="text/javascript" src="shuffler2.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.1/seedrandom.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@sestren/bin-patcher@1.0.0/dist/bin-patcher.js"></script>
-    <script src="shuffler/generate-words.js"></script>
-    <script src="shuffler/constants.js"></script>
+    <script src="generate-words.js"></script>
+    <!-- <script src="constants.js"></script> -->
+    <script src="common.js"></script>
     <!-- <script src="src/util.js"></script> -->
      <script type="importmap">
         {
@@ -138,7 +139,7 @@
 
         function getShufflerOptions() {
             const result = {}
-            console.log('parseOptions()')
+            console.log('getShufflerOptions()')
             const formElement = document.getElementById("shufflerOptions")
             // const submitter = document.getElementById("generateButton")
             const formData = new FormData(formElement)
@@ -177,8 +178,7 @@
                 digestMessage(buffer)
                 .then((digestHex) => {
                     console.log('Digest of disc image', digestHex)
-                    const bin = new BinPatcher.GameData(buffer)
-                    data.extraction = BinPatcher.processBinary(bin).extraction
+                    data.extraction = getExtractionFromBin(buffer)
                     const link = document.getElementById('downloadExtractionLink')
                     link.innerHTML = 'Download extraction.json'
                     link.download = "extraction.json"
@@ -205,25 +205,7 @@
             // console.log(address.valueOf())
             console.log('seed:', seed)
             // document.getElementById('seed').value = getSeedName(seed)
-            // ...
-            const changesToApply = []
-            const patcherList = shufflerOptions?.patcher?.list ?? []
-            console.log('patcherList:', patcherList)
-            patcherList
-            .forEach((patchName) => {
-                changesToApply.push(PATCHES[patchName])
-            })
-            changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
-            let patchData = BinPatcher.maskNodes(data.extraction, 'data')
-            // Apply changes to patch file
-            changesToApply
-            .forEach((changesData) => {
-                for (const changeData of changesData.changes) {
-                    BinPatcher.applyChange(patchData, changeData)
-                }
-            })
-            // Convert patch file to PPF
-            const ppfData = BinPatcher.toPPF(patchData, 'Test')
+            const ppfData = generatePPF(data.extraction, shufflerOptions)
             console.log('ppfData.length:', ppfData.length)
             // Create link to downloadable PPF
             const link = document.getElementById('downloadPPFLink')
