@@ -123,13 +123,34 @@
             }
         }
      </script>
-    <script type="module">
+    <script>
 
         // import {
         //     getSeedName,
         // } from "sotn-shuffler"
 
         let data = {}
+
+        function getExtractionFromBin(buffer) {
+            const bin = new BinPatcher.GameData(buffer)
+            const result = BinPatcher.processBinary(bin).extraction
+            return result
+        }
+
+        function generatePPF(extractionData, changesToApply) {
+            // Start with a blank patch file
+            let patchData = BinPatcher.maskNodes(extractionData, 'data')
+            // Apply changes to patch file
+            changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
+            .forEach((changesData) => {
+                for (const changeData of changesData.changes) {
+                    BinPatcher.applyChange(patchData, changeData)
+                }
+            })
+            // Convert patch file to PPF
+            const result = BinPatcher.toPPF(patchData, 'Test')
+            return result
+        }
 
         async function digestMessage(data) {
             const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
@@ -205,7 +226,8 @@
             // console.log(address.valueOf())
             console.log('seed:', seed)
             // document.getElementById('seed').value = getSeedName(seed)
-            const ppfData = generatePPF(data.extraction, shufflerOptions)
+            const changesToApply = sotnRando.common.getChangesFromOptions(shufflerOptions)
+            const ppfData = generatePPF(data.extraction, changesToApply)
             console.log('ppfData.length:', ppfData.length)
             // Create link to downloadable PPF
             const link = document.getElementById('downloadPPFLink')
