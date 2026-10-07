@@ -4,7 +4,6 @@ const yargs = require('yargs')
 
 const BinPatcher = require('@sestren/bin-patcher')
 const SotnPatcher = require('@sestren/bin-patcher/bins/sotn-us')
-// const sotnPatcher = require('bin-patcher/bins/sotn-us/')
 // const sotnShuffler = require('sotn-shuffler')
 const common = require('./common.js')
 
@@ -57,6 +56,16 @@ const argv = yargs(process.argv.slice(2))
                 describe: 'A list of filepaths of patches to apply, in order',
                 type: 'array',
             })
+        // Music shuffler options
+            .option('musicShuffler.on', {
+                describe: 'Whether or not to enable shuffling of in-game music; if disabled, all other options in this category are ignored',
+                type: 'boolean',
+            })
+            .option('musicShuffler.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the music shuffler',
+                type: 'string',
+            })
+        // The following options must be declared
             .demandOption(['bin', 'out'])
         },
         handler: (argv) => {
@@ -78,6 +87,15 @@ const argv = yargs(process.argv.slice(2))
                 }
                 if ('list' in argv.patcher) {
                     shufflerOptions.patcher.list = argv.patcher.list
+                }
+            }
+            if ('musicShuffler' in argv) {
+                shufflerOptions.musicShuffler = {}
+                if (('on' in argv.musicShuffler)) {
+                    shufflerOptions.musicShuffler.on = argv.musicShuffler.on
+                }
+                if ('seed' in argv.musicShuffler) {
+                    shufflerOptions.musicShuffler.seed = argv.musicShuffler.seed
                 }
             }
             // Generate PPF from shuffler options

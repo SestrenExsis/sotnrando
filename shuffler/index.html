@@ -24,9 +24,18 @@
                         <input id="rewardShuffler.on" type="checkbox" checked />
                     </div>
                 -->
+                    <div id="div_musicShuffler">
+                        <fieldset>
+                            <legend>Randomization</legend>
+                            <div>
+                                <input name="musicShuffler.on" type="checkbox" checked />
+                                <label for="musicShuffler.on">Shuffle music?</label>
+                            </div>
+                        </fieldset>
+                    </div>
                     <div id="div_toggles">
                         <fieldset>
-                            <legend>Toggles</legend>
+                            <legend>Patches</legend>
                             <div>
                                 <input name="patcher.list" value="assignUniqueIdToRelicAfterDrawbridge" type="checkbox" checked />
                                 <label for="patcher.list=assignUniqueIdToRelicAfterDrawbridge">Assign Unique ID to Relic After Drawbridge?</label>
@@ -108,21 +117,20 @@
             </div>
         </div>
     </body>
-    <!-- <script type="text/javascript" src="shuffler2.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.1/seedrandom.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@sestren/bin-patcher@1.0.0/dist/bin-patcher.js"></script>
-    <script src="generate-words.js"></script>
+    <!-- <script src="generate-words.js"></script> -->
     <!-- <script src="constants.js"></script> -->
     <script src="common.js"></script>
     <!-- <script src="src/util.js"></script> -->
-     <script type="importmap">
+    <script type="importmap">
         {
             "imports": {
                 "seedrandom": "https://cdn.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js",
                 "sotn-shuffler": "https://cdn.jsdelivr.net/gh/SestrenExsis/SOTN-Shuffler@refactor/index.js"
             }
         }
-     </script>
+    </script>
     <script>
 
         // import {
@@ -166,6 +174,14 @@
             const formData = new FormData(formElement)
             for (const element of formData) {
                 switch (element.at(0)) {
+                    case 'musicShuffler.on':
+                        if (!('musicShuffler' in result)) {
+                            result.musicShuffler = {}
+                        }
+                        if (!('on' in result.musicShuffler)) {
+                            result.musicShuffler.on = true
+                        }
+                        break
                     case 'patcher.list':
                         if (!('patcher' in result)) {
                             result.patcher = {}
