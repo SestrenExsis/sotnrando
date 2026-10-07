@@ -5,7 +5,7 @@ const yargs = require('yargs')
 const BinPatcher = require('@sestren/bin-patcher')
 const SotnPatcher = require('@sestren/bin-patcher/bins/sotn-us')
 // const sotnShuffler = require('sotn-shuffler')
-const common = require('./common.js')
+const core = require('./core.js')
 
 function getExtractionFromBin(buffer) {
     const bin = new BinPatcher.GameData(buffer)
@@ -17,7 +17,7 @@ function generatePPF(extractionData, changesToApply) {
     // Start with a blank patch file
     let patchData = BinPatcher.maskNodes(extractionData, 'data')
     // Apply changes to patch file
-    changesToApply.concat(SotnPatcher.getDefaultChangeDependencies())
+    changesToApply
     .forEach((changesData) => {
         for (const changeData of changesData.changes) {
             BinPatcher.applyChange(patchData, changeData)
@@ -99,7 +99,8 @@ const argv = yargs(process.argv.slice(2))
                 }
             }
             // Generate PPF from shuffler options
-            const changesToApply = common.getChangesFromOptions(shufflerOptions)
+            let changesToApply = core.getChangesFromOptions(shufflerOptions)
+            changesToApply = changesToApply.concat(SotnPatcher.getDefaultChangeDependencies())
             const ppfData = generatePPF(extractionData, changesToApply)
             fs.writeFileSync(argv.out, ppfData)
             // TODO(sestren): Add debug data to PPF description

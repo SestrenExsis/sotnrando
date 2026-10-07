@@ -122,6 +122,8 @@
     <!-- <script src="generate-words.js"></script> -->
     <!-- <script src="constants.js"></script> -->
     <script src="common.js"></script>
+    <script src="shuffle-music.js"></script>
+    <script src="core.js"></script>
     <!-- <script src="src/util.js"></script> -->
     <script type="importmap">
         {
@@ -149,7 +151,7 @@
             // Start with a blank patch file
             let patchData = BinPatcher.maskNodes(extractionData, 'data')
             // Apply changes to patch file
-            changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
+            changesToApply
             .forEach((changesData) => {
                 for (const changeData of changesData.changes) {
                     BinPatcher.applyChange(patchData, changeData)
@@ -242,7 +244,8 @@
             // console.log(address.valueOf())
             console.log('seed:', seed)
             // document.getElementById('seed').value = getSeedName(seed)
-            const changesToApply = sotnRando.common.getChangesFromOptions(shufflerOptions)
+            let changesToApply = sotnShuffler.core.getChangesFromOptions(shufflerOptions)
+            changesToApply = changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
             const ppfData = generatePPF(data.extraction, changesToApply)
             console.log('ppfData.length:', ppfData.length)
             // Create link to downloadable PPF
