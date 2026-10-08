@@ -7,7 +7,6 @@
     "colors": "1.4.0",
     "hygen": "6.2.11",
     "seedrandom": "3.0.5",
-    "sotn-shuffler": "file:/run/media/sestren-main/bonus-drive/documents/github.com/SestrenExsis/SOTN-Shuffler",
     "yargs": "17.7.2"
   },
   "repository": {
