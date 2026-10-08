@@ -510,7 +510,7 @@
     }
     if (self) {
         self.sotnShuffler = Object.assign(self.sotnShuffler || {}, {
-            shuffleMusic: exports,
+            musicShuffler: exports,
         })
     } else {
         module.exports = exports

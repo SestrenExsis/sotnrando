@@ -47,6 +47,11 @@ const argv = yargs(process.argv.slice(2))
                 normalize: true,
                 default: 'seeds/current-seed.ppf',
             })
+            .option('seed', {
+                alias: 's',
+                describe: 'Seed to provide for randomization',
+                type: 'string',
+            })
         // Patcher options
             .option('patcher.on', {
                 describe: 'Whether or not to apply the given list of patches',
@@ -80,6 +85,9 @@ const argv = yargs(process.argv.slice(2))
             const extractionData = getExtractionFromBin(buffer)
             // Generate shuffler options from args
             const shufflerOptions = {}
+            if ('seed' in argv) {
+                shufflerOptions.seed = argv.seed
+            }
             if ('patcher' in argv) {
                 shufflerOptions.patcher = {}
                 if (('on' in argv.patcher)) {

@@ -1,10 +1,16 @@
 (function (self) {
-    let shuffleMusic
+    let musicShuffler
+    let wordGenerator
+    // let seedrandom
 
     if (self) {
-        shuffleMusic = self.sotnShuffler.shuffleMusic
+        musicShuffler = self.sotnShuffler.musicShuffler
+        // seedrandom = Math.seedrandom
+        wordGenerator = self.sotnShuffler.wordGenerator
     } else {
-        shuffleMusic = require('./shuffle-music')
+        musicShuffler = require('./music-shuffler')
+        // seedrandom = require('seedrandom')
+        wordGenerator = require('./word-generator')
     }
 
     const PATCHES = {
@@ -5626,12 +5632,21 @@
     }
 
     function getChangesFromOptions(shufflerOptions) {
-        const seedName = 'defaultSeed'
         const result = []
+        let seedName
+        if (shufflerOptions?.seed !== undefined) {
+            seedName = shufflerOptions.seed
+        }
+        else {
+            const seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+            seedName = wordGenerator.getSeedName(seed)
+        }
+        console.log('seedName:', seedName)
         if (shufflerOptions?.musicShuffler?.on ?? false) {
             const seed = shufflerOptions.musicShuffler.seed ?? (seedName + '.musicShuffler')
-            const songChanges = shuffleMusic.shuffleSongs(seed)
-            result.push(shuffleMusic.getSongChanges(songChanges))
+            const songChanges = musicShuffler.shuffleSongs(seed)
+            console.log('songChanges:', songChanges)
+            result.push(musicShuffler.getSongChanges(songChanges))
         }
         if (shufflerOptions?.patcher?.on ?? false) {
             const patcherList = shufflerOptions?.patcher?.list ?? []
