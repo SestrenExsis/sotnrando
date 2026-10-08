@@ -1,15 +1,18 @@
 (function (self) {
+    // let seedrandom
     let musicShuffler
     let wordGenerator
-    // let seedrandom
+    let stageShuffler
 
     if (self) {
-        musicShuffler = self.sotnShuffler.musicShuffler
         // seedrandom = Math.seedrandom
+        musicShuffler = self.sotnShuffler.musicShuffler
+        stageShuffler = self.sotnShuffler.stageShuffler
         wordGenerator = self.sotnShuffler.wordGenerator
     } else {
-        musicShuffler = require('./music-shuffler')
         // seedrandom = require('seedrandom')
+        musicShuffler = require('./music-shuffler')
+        stageShuffler = require('./stage-shuffler')
         wordGenerator = require('./word-generator')
     }
 
@@ -5631,8 +5634,9 @@
         }
     }
 
-    function getChangesFromOptions(shufflerOptions) {
+    function getChangesFromOptions(shufflerOptions, extractionData) {
         const result = []
+        // Determine seed name
         let seedName
         if (shufflerOptions?.seed !== undefined) {
             seedName = shufflerOptions.seed
@@ -5642,12 +5646,27 @@
             seedName = wordGenerator.getSeedName(seed)
         }
         console.log('seedName:', seedName)
+        // Shuffle music
         if (shufflerOptions?.musicShuffler?.on ?? false) {
             const seed = shufflerOptions.musicShuffler.seed ?? (seedName + '.musicShuffler')
             const songChanges = musicShuffler.shuffleSongs(seed)
             console.log('songChanges:', songChanges)
             result.push(musicShuffler.getSongChanges(songChanges))
         }
+        // ...
+        const analysis = {
+            solverAttemptId: 0,
+            stageLinks: stageShuffler.getVanillaStageLinks(),
+        }
+        // Shuffle stages
+        if (shufflerOptions?.stageShuffler?.on ?? false) {
+            const seed = shufflerOptions.stageShuffler.seed ?? (seedName + '.stageShuffler.' + analysis.solverAttemptId)
+            analysis.stageLinks = stageShuffler.shuffleStages(seed).links
+            result.push(
+                stageShuffler.getTeleporterChanges(extractionData, analysis.stageLinks)
+            )
+        }
+        // Apply patches
         if (shufflerOptions?.patcher?.on ?? false) {
             const patcherList = shufflerOptions?.patcher?.list ?? []
             patcherList

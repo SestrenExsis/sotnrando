@@ -41,6 +41,15 @@
                             </div>
                         </fieldset>
                     </div>
+                    <div id="div_seed">
+                        <fieldset>
+                            <legend>Stage Shuffler</legend>
+                            <div>
+                                <input name="stageShuffler.on" type="checkbox" checked />
+                                <label for="stageShuffler.on">Shuffle stages?</label>
+                            </div>
+                        </fieldset>
+                    </div>
                     <div id="div_toggles">
                         <fieldset>
                             <legend>Patches</legend>
@@ -130,6 +139,7 @@
     <!-- common.js must be imported before anything dependent on it -->
     <script src="common.js"></script>
     <script src="music-shuffler.js"></script>
+    <script src="stage-shuffler.js"></script>
     <script src="word-generator.js"></script>
     <script src="core.js"></script>
     <!-- core.js must be imported after anything it depends on -->
@@ -152,7 +162,7 @@
 
         function generatePPF(extractionData, changesToApply) {
             // Start with a blank patch file
-            let patchData = BinPatcher.maskNodes(extractionData, 'data')
+            let patchData = BinPatcher.maskNodes(structuredClone(extractionData), 'data')
             // Apply changes to patch file
             changesToApply
             .forEach((changesData) => {
@@ -179,6 +189,11 @@
             const formData = new FormData(formElement)
             for (const element of formData) {
                 switch (element.at(0)) {
+                    case 'clockFaceDisplay':
+                        if (element.at(1) === 'minutesAndSeconds') {
+                            result.patcher.list.push('showMinutesAndSecondsInClockRoom')
+                        }
+                        break
                     case 'seed':
                         if (element.at(1).length > 0) {
                             result.seed = element.at(1)
@@ -204,9 +219,12 @@
                         }
                         result.patcher.list.push(element.at(1))
                         break
-                    case 'clockFaceDisplay':
-                        if (element.at(1) === 'minutesAndSeconds') {
-                            result.patcher.list.push('showMinutesAndSecondsInClockRoom')
+                    case 'stageShuffler.on':
+                        if (!('stageShuffler' in result)) {
+                            result.stageShuffler = {}
+                        }
+                        if (!('on' in result.stageShuffler)) {
+                            result.stageShuffler.on = true
                         }
                         break
                 }
@@ -244,7 +262,7 @@
             const shufflerOptions = getShufflerOptions()
             console.log('shufflerOptions:', shufflerOptions)
             // document.getElementById('seed').value = getSeedName(seed)
-            let changesToApply = sotnShuffler.core.getChangesFromOptions(shufflerOptions)
+            let changesToApply = sotnShuffler.core.getChangesFromOptions(shufflerOptions, data.extraction)
             changesToApply = changesToApply.concat(BinPatcher.getDefaultChangeDependencies())
             const ppfData = generatePPF(data.extraction, changesToApply)
             console.log('ppfData.length:', ppfData.length)

@@ -10,6 +10,16 @@
         seedrandom = require('seedrandom')
     }
 
+    const TEMPLATE = {
+        authors: [
+            'Sestren',
+        ],
+        changes: [],
+        description: [
+            'Shuffle music',
+        ],
+    }
+
     const SONGS = {
         abandonedMine: {
             stage: {
@@ -486,27 +496,18 @@
                 songChanges[keyName + '='] = songName
             })
         })
-        const result = {
-            authors: [
-                'Sestren',
-            ],
-            changes: [
-                {
-                    changeType: 'merge',
-                    merge: songChanges,
-                },
-            ],
-            description: [
-                'Shuffle music'
-            ],
-        }
+        const result = Object.assign({}, TEMPLATE)
+        result.changes.push({
+            changeType: 'merge',
+            merge: songChanges,
+        })
         return result
     }
 
     const exports = {
         SONGS: SONGS,
-        shuffleSongs: shuffleSongs,
         getSongChanges: getSongChanges,
+        shuffleSongs: shuffleSongs,
     }
     if (self) {
         self.sotnShuffler = Object.assign(self.sotnShuffler || {}, {

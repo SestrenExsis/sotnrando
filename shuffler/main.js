@@ -52,6 +52,15 @@ const argv = yargs(process.argv.slice(2))
                 describe: 'Seed to provide for randomization',
                 type: 'string',
             })
+        // Music shuffler options
+            .option('musicShuffler.on', {
+                describe: 'Whether or not to enable shuffling of in-game music; if disabled, all other options in this category are ignored',
+                type: 'boolean',
+            })
+            .option('musicShuffler.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the music shuffler',
+                type: 'string',
+            })
         // Patcher options
             .option('patcher.on', {
                 describe: 'Whether or not to apply the given list of patches',
@@ -61,13 +70,13 @@ const argv = yargs(process.argv.slice(2))
                 describe: 'A list of filepaths of patches to apply, in order',
                 type: 'array',
             })
-        // Music shuffler options
-            .option('musicShuffler.on', {
-                describe: 'Whether or not to enable shuffling of in-game music; if disabled, all other options in this category are ignored',
+        // Stage shuffler options
+            .option('stageShuffler.on', {
+                describe: 'Whether or not to shuffle the connections between stages (aka, teleporters). If disabled, all other options in this category are ignored.',
                 type: 'boolean',
             })
-            .option('musicShuffler.seed', {
-                describe: 'If supplied, this seed is always used for supplying randomness to the music shuffler',
+            .option('stageShuffler.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the stage shuffler',
                 type: 'string',
             })
         // The following options must be declared
@@ -106,8 +115,17 @@ const argv = yargs(process.argv.slice(2))
                     shufflerOptions.musicShuffler.seed = argv.musicShuffler.seed
                 }
             }
+            if ('stageShuffler' in argv) {
+                shufflerOptions.stageShuffler = {}
+                if (('on' in argv.stageShuffler)) {
+                    shufflerOptions.stageShuffler.on = argv.stageShuffler.on
+                }
+                if ('seed' in argv.stageShuffler) {
+                    shufflerOptions.stageShuffler.seed = argv.stageShuffler.seed
+                }
+            }
             // Generate PPF from shuffler options
-            let changesToApply = core.getChangesFromOptions(shufflerOptions)
+            let changesToApply = core.getChangesFromOptions(shufflerOptions, extractionData)
             changesToApply = changesToApply.concat(SotnPatcher.getDefaultChangeDependencies())
             const ppfData = generatePPF(extractionData, changesToApply)
             fs.writeFileSync(argv.out, ppfData)
