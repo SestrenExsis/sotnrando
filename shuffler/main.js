@@ -4,7 +4,6 @@ const yargs = require('yargs')
 
 const BinPatcher = require('@sestren/bin-patcher')
 const SotnPatcher = require('@sestren/bin-patcher/bins/sotn-us')
-// const sotnShuffler = require('sotn-shuffler')
 const core = require('./core.js')
 
 function getExtractionFromBin(buffer) {
@@ -70,6 +69,20 @@ const argv = yargs(process.argv.slice(2))
                 describe: 'A list of filepaths of patches to apply, in order',
                 type: 'array',
             })
+        // Reward shuffler options
+            .option('rewardShuffler.on', {
+                describe: 'Whether or not to shuffle quest rewards (aka, items and relics). If disabled, all other options in this category are ignored.',
+                type: 'boolean',
+            })
+            .option('rewardShuffler.method', {
+                describe: 'TODO(sestren): Describe rewardShuffler.method',
+                type: 'string',
+                default: 'unbiased',
+            })
+            .option('rewardShuffler.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the reward shuffler',
+                type: 'string',
+            })
         // Stage shuffler options
             .option('stageShuffler.on', {
                 describe: 'Whether or not to shuffle the connections between stages (aka, teleporters). If disabled, all other options in this category are ignored.',
@@ -115,6 +128,18 @@ const argv = yargs(process.argv.slice(2))
                     shufflerOptions.musicShuffler.seed = argv.musicShuffler.seed
                 }
             }
+            if ('rewardShuffler' in argv) {
+                shufflerOptions.rewardShuffler = {}
+                if (('on' in argv.rewardShuffler)) {
+                    shufflerOptions.rewardShuffler.on = argv.rewardShuffler.on
+                }
+                if ('seed' in argv.rewardShuffler) {
+                    shufflerOptions.rewardShuffler.seed = argv.rewardShuffler.seed
+                }
+                if ('method' in argv.rewardShuffler) {
+                    shufflerOptions.rewardShuffler.method = argv.rewardShuffler.method
+                }
+            }
             if ('stageShuffler' in argv) {
                 shufflerOptions.stageShuffler = {}
                 if (('on' in argv.stageShuffler)) {
@@ -141,26 +166,6 @@ const argv = yargs(process.argv.slice(2))
             //   - s=Hash of initial seed
             //   - t=Hex of Unix time seed was generated
             //   - v=Hash of generator ID and generator version (e.g., SOTN-Shuffler v1.0.0)
-        }
-    })
-    .command({ // seed
-        command: 'seed',
-        describe: 'Generate a random seed value',
-        builder: (yargs) => {
-            return yargs
-            .option('seed', {
-                alias: 's',
-                describe: 'Seed to provide for randomization',
-                type: 'string',
-            })
-            // .demandOption(['seed'])
-        },
-        handler: (argv) => {
-            let seed = argv.seed
-            if (!seed) {
-                seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
-            }
-            console.log(sotnShuffler.getSeedName(argv.seed))
         }
     })
     .demandCommand(1)

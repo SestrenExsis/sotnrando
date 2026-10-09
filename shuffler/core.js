@@ -2,16 +2,22 @@
     // let seedrandom
     let musicShuffler
     let wordGenerator
+    let rewardShuffler
+    let roomShuffler
     let stageShuffler
 
     if (self) {
         // seedrandom = Math.seedrandom
         musicShuffler = self.sotnShuffler.musicShuffler
+        rewardShuffler = self.sotnShuffler.rewardShuffler
+        roomShuffler = self.sotnShuffler.roomShuffler
         stageShuffler = self.sotnShuffler.stageShuffler
         wordGenerator = self.sotnShuffler.wordGenerator
     } else {
         // seedrandom = require('seedrandom')
         musicShuffler = require('./music-shuffler')
+        rewardShuffler = require('./reward-shuffler')
+        roomShuffler = require('./room-shuffler')
         stageShuffler = require('./stage-shuffler')
         wordGenerator = require('./word-generator')
     }
@@ -5650,11 +5656,12 @@
         if (shufflerOptions?.musicShuffler?.on ?? false) {
             const seed = shufflerOptions.musicShuffler.seed ?? (seedName + '.musicShuffler')
             const songChanges = musicShuffler.shuffleSongs(seed)
-            console.log('songChanges:', songChanges)
             result.push(musicShuffler.getSongChanges(songChanges))
         }
         // ...
         const analysis = {
+            locationRewards: rewardShuffler.getVanillaRewardLocations(),
+            roomPositions: roomShuffler.getVanillaRoomPositions(extractionData),
             solverAttemptId: 0,
             stageLinks: stageShuffler.getVanillaStageLinks(),
         }
@@ -5665,6 +5672,32 @@
             result.push(
                 stageShuffler.getTeleporterChanges(extractionData, analysis.stageLinks)
             )
+        }
+        // Shuffle rewards
+        if (shufflerOptions?.rewardShuffler?.on ?? false) {
+            const seed = shufflerOptions.rewardShuffler.seed ?? (seedName + '.rewardShuffler.' + analysis.solverAttemptId)
+            let questRewards
+            switch (shufflerOptions.rewardShuffler.method) {
+                case 'chained':
+                    questRewards = rewardShuffler.assignChainedRewards(seed, analysis)
+                    // if (questRewards.invalidated) {
+                    //     analysis.invalidated = true
+                    // }
+                    break
+                case 'layered':
+                    questRewards = rewardShuffler.assignLayeredRewards(seed, analysis)
+                    // if (questRewards.invalidated) {
+                    //     analysis.invalidated = true
+                    // }
+                    break
+                case 'unbiased':
+                default:
+                    questRewards = rewardShuffler.shuffleRewards(seed)
+                    break
+            }
+            console.log('questRewards.invalidated:', questRewards.invalidated)
+            analysis.locationRewards = questRewards.locations
+            result.push(rewardShuffler.getRewardChanges(questRewards.locations))
         }
         // Apply patches
         if (shufflerOptions?.patcher?.on ?? false) {
