@@ -1,6 +1,7 @@
 (function (self) {
     // let seedrandom
     let common
+    let gearRandomizer
     let musicShuffler
     let wordGenerator
     let rewardShuffler
@@ -10,6 +11,7 @@
     if (self) {
         // seedrandom = Math.seedrandom
         common = self.sotnShuffler.common
+        gearRandomizer = self.sotnShuffler.gearRandomizer
         musicShuffler = self.sotnShuffler.musicShuffler
         rewardShuffler = self.sotnShuffler.rewardShuffler
         roomShuffler = self.sotnShuffler.roomShuffler
@@ -18,6 +20,7 @@
     } else {
         // seedrandom = require('seedrandom')
         common = require('./common')
+        gearRandomizer = require('./gear-randomizer')
         musicShuffler = require('./music-shuffler')
         rewardShuffler = require('./reward-shuffler')
         roomShuffler = require('./room-shuffler')
@@ -5806,7 +5809,6 @@
                 result.analysis.prospectiveChanges.push(
                     roomShuffler.getRoomChanges(result.analysis.roomPositions, MIN_MAP_ROW, MIN_MAP_COL)
                 )
-                // BUG(sestren): Castle map wasn't redrawn!!
             }
             // Shuffle rewards
             if (shufflerOptions?.rewardShuffler?.on ?? false) {
@@ -5974,14 +5976,23 @@
             }
             result.analysis.prospectiveChanges.push(mapRevealChanges)
         }
+        // Randomize gear
+        if (shufflerOptions?.gearRandomizer?.on ?? false) {
+            console.log(' ... Randomize gear')
+            const seed = shufflerOptions.gearRandomizer.seed ?? (result.seeds.seedName + '.gearRandomizer')
+            const gearChanges = gearRandomizer.randomizeGear(seed)
+            result.changes.push(gearRandomizer.getGearChanges(gearChanges))
+        }
         // Shuffle music
         if (shufflerOptions?.musicShuffler?.on ?? false) {
+            console.log(' ... Shuffle music')
             const seed = shufflerOptions.musicShuffler.seed ?? (result.seeds.seedName + '.musicShuffler')
             const songChanges = musicShuffler.shuffleSongs(seed)
             result.changes.push(musicShuffler.getSongChanges(songChanges))
         }
         // Add hints to the file select menu
         if (shufflerOptions.hinter?.seedName || shufflerOptions.hinter?.options) {
+            console.log(' ... Add hints to the file select menu')
             const hintMessages = [
                 (shufflerOptions.hinter?.seedName) ? result.seeds.seedName : '',
                 (shufflerOptions.hinter?.options) ? common.hashedObject(shufflerOptions, ['seed', ]) : '',

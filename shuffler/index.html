@@ -52,16 +52,20 @@
                         <fieldset>
                             <legend>Reward Shuffler</legend>
                             <div>
-                                <input name="rewardShuffler.on" type="checkbox" checked />
-                                <label for="rewardShuffler.on">Shuffle rewards?</label>
+                                <input name="gearRandomizer.on" type="checkbox" checked />
+                                <label for="gearRandomizer.on">Randomize gear?</label>
                             </div>
+                            <!-- <div>
+                                <input name="rewardShuffler.shuffleEnemyDrops" type="checkbox" checked />
+                                <label for="rewardShuffler.shuffleEnemyDrops">Shuffle enemy drops?</label>
+                            </div> -->
+                            <!-- <div>
+                                <input name="rewardShuffler.shuffleItems" type="checkbox" checked />
+                                <label for="rewardShuffler.shuffleItems">Shuffle items?</label>
+                            </div> -->
                             <div>
-                                <select name="rewardShuffler.method">
-                                    <option value="chained">Chained</option>
-                                    <option value="layered">Layered</option>
-                                    <option value="unbiased">Unbiased</option>
-                                </select>
-                                <label for="rewardShuffler.method">Method</label>
+                                <input name="rewardShuffler.on" type="checkbox" checked />
+                                <label for="rewardShuffler.on">Shuffle relics?</label>
                             </div>
                         </fieldset>
                     </div>
@@ -153,6 +157,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@sestren/bin-patcher@1.0.0/dist/bin-patcher.js"></script>
     <!-- common.js must be imported before anything dependent on it -->
     <script src="common.js"></script>
+    <script src="gear-randomizer.js"></script>
     <script src="music-shuffler.js"></script>
     <script src="reward-shuffler.js"></script>
     <script src="room-shuffler.js"></script>
@@ -208,6 +213,14 @@
                             result.patcher.list.push('showMinutesAndSecondsInClockRoom')
                         }
                         break
+                    case 'gearRandomizer.on':
+                        if (!('gearRandomizer' in result)) {
+                            result.gearRandomizer = {}
+                        }
+                        if (!('on' in result.gearRandomizer)) {
+                            result.gearRandomizer.on = true
+                        }
+                        break
                     case 'musicShuffler.on':
                         if (!('musicShuffler' in result)) {
                             result.musicShuffler = {}
@@ -236,12 +249,6 @@
                         if (!('on' in result.rewardShuffler)) {
                             result.rewardShuffler.on = true
                         }
-                        break
-                    case 'rewardShuffler.method':
-                        if (!('rewardShuffler' in result)) {
-                            result.rewardShuffler = {}
-                        }
-                        result.rewardShuffler.method = element.at(1)
                         break
                     case 'roomShuffler.on':
                         if (!('roomShuffler' in result)) {

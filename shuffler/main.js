@@ -133,13 +133,13 @@ const argv = yargs(process.argv.slice(2))
             if ('seed' in argv) {
                 shufflerOptions.seed = argv.seed
             }
-            if ('patcher' in argv) {
-                shufflerOptions.patcher = {}
-                if (('on' in argv.patcher)) {
-                    shufflerOptions.patcher.on = argv.patcher.on
+            if ('gearRandomizer' in argv) {
+                shufflerOptions.gearRandomizer = {}
+                if (('on' in argv.gearRandomizer)) {
+                    shufflerOptions.gearRandomizer.on = argv.gearRandomizer.on
                 }
-                if ('list' in argv.patcher) {
-                    shufflerOptions.patcher.list = argv.patcher.list
+                if ('seed' in argv.gearRandomizer) {
+                    shufflerOptions.gearRandomizer.seed = argv.gearRandomizer.seed
                 }
             }
             if ('hinter' in argv) {
@@ -161,6 +161,15 @@ const argv = yargs(process.argv.slice(2))
                 }
                 if ('seed' in argv.musicShuffler) {
                     shufflerOptions.musicShuffler.seed = argv.musicShuffler.seed
+                }
+            }
+            if ('patcher' in argv) {
+                shufflerOptions.patcher = {}
+                if (('on' in argv.patcher)) {
+                    shufflerOptions.patcher.on = argv.patcher.on
+                }
+                if ('list' in argv.patcher) {
+                    shufflerOptions.patcher.list = argv.patcher.list
                 }
             }
             if ('rewardShuffler' in argv) {

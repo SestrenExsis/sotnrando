@@ -20,28 +20,6 @@
         ],
     }
 
-    // stages.abandonedMine.constants.uniqueItemDrops.dropUnusedItem
-    // stages.olroxsQuarters.constants.uniqueItemDrops.unusedItemDrop1
-    // stages.clockTower.constants.uniqueItemDrops.dropStoneSword
-    // stages.colosseum.constants.uniqueItemDrops.dropUnusedItem
-    // stages.castleKeep.constants.uniqueItemDrops.dropUnusedItem2
-    // stages.castleKeep.constants.uniqueItemDrops.dropUnusedItem1
-    // stages.undergroundCaverns.constants.uniqueItemDrops.dropUnusedItem1
-    // stages.bossScylla.constants.uniqueItemDrops.dropUnusedItem1
-    // stages.undergroundCaverns.constants.uniqueItemDrops.dropUnusedItem2
-    // stages.bossScylla.constants.uniqueItemDrops.dropUnusedItem2
-    // stages.castleEntrance.constants.uniqueItemDrops.dropUnusedItem
-    // stages.castleEntranceRevisited.constants.uniqueItemDrops.dropUnusedItem
-    // stages.longLibrary.constants.uniqueItemDrops.unusedItemDrop1
-    // stages.outerWall.constants.uniqueItemDrops.unusedItemDrop
-    // stages.olroxsQuarters.constants.uniqueItemDrops.unusedItemDrop2
-    // stages.longLibrary.constants.uniqueItemDrops.unusedItemDrop2
-    // stages.longLibrary.constants.uniqueItemDrops.unusedItemDrop3
-    // stages.catacombs.constants.uniqueItemDrops.dropSpikeBreaker
-    // stages.royalChapel.constants.uniqueItemDrops.dropSilverRing
-    // stages.bossScylla.constants.uniqueItemDrops.dropGoldRing
-    // stages.undergroundCaverns.constants.uniqueItemDrops.dropGoldRing
-
     const LOCATIONS = {
         locationBatCard: {
             defaultValue: 'relicBatCard',
