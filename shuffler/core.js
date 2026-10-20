@@ -1,6 +1,7 @@
 (function (self) {
     // let seedrandom
     let common
+    let enemyDropRandomizer
     let gearRandomizer
     let musicShuffler
     let wordGenerator
@@ -11,6 +12,7 @@
     if (self) {
         // seedrandom = Math.seedrandom
         common = self.sotnShuffler.common
+        enemyDropRandomizer = self.sotnShuffler.enemyDropRandomizer
         gearRandomizer = self.sotnShuffler.gearRandomizer
         musicShuffler = self.sotnShuffler.musicShuffler
         rewardShuffler = self.sotnShuffler.rewardShuffler
@@ -20,6 +22,7 @@
     } else {
         // seedrandom = require('seedrandom')
         common = require('./common')
+        enemyDropRandomizer = require('./enemy-drop-randomizer')
         gearRandomizer = require('./gear-randomizer')
         musicShuffler = require('./music-shuffler')
         rewardShuffler = require('./reward-shuffler')
@@ -5975,6 +5978,13 @@
                 ],
             }
             result.analysis.prospectiveChanges.push(mapRevealChanges)
+        }
+        // Randomize enemy drops
+        if (shufflerOptions?.enemyDropRandomizer?.on ?? false) {
+            console.log(' ... Randomize enemy drops')
+            const seed = shufflerOptions.enemyDropRandomizer.seed ?? (result.seeds.seedName + '.enemyDropRandomizer')
+            const enemyDropChanges = enemyDropRandomizer.randomizeEnemyDrops(seed)
+            result.changes.push(enemyDropRandomizer.getEnemyDropChanges(enemyDropChanges))
         }
         // Randomize gear
         if (shufflerOptions?.gearRandomizer?.on ?? false) {

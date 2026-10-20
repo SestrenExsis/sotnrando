@@ -52,13 +52,13 @@
                         <fieldset>
                             <legend>Reward Shuffler</legend>
                             <div>
-                                <input name="gearRandomizer.on" type="checkbox" checked />
-                                <label for="gearRandomizer.on">Randomize gear?</label>
+                                <input name="enemyDropRandomizer.on" type="checkbox" checked />
+                                <label for="enemyDropRandomizer.on">Randomize enemy drops?</label>
                             </div>
-                            <!-- <div>
-                                <input name="rewardShuffler.shuffleEnemyDrops" type="checkbox" checked />
-                                <label for="rewardShuffler.shuffleEnemyDrops">Shuffle enemy drops?</label>
-                            </div> -->
+                            <div>
+                                <input name="gearRandomizer.on" type="checkbox" checked />
+                                <label for="gearRandomizer.on">Randomize starting gear?</label>
+                            </div>
                             <!-- <div>
                                 <input name="rewardShuffler.shuffleItems" type="checkbox" checked />
                                 <label for="rewardShuffler.shuffleItems">Shuffle items?</label>
@@ -157,6 +157,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@sestren/bin-patcher@1.0.0/dist/bin-patcher.js"></script>
     <!-- common.js must be imported before anything dependent on it -->
     <script src="common.js"></script>
+    <script src="enemy-drop-randomizer.js"></script>
     <script src="gear-randomizer.js"></script>
     <script src="music-shuffler.js"></script>
     <script src="reward-shuffler.js"></script>
@@ -211,6 +212,14 @@
                         }
                         if (element.at(1) === 'minutesAndSeconds') {
                             result.patcher.list.push('showMinutesAndSecondsInClockRoom')
+                        }
+                        break
+                    case 'enemyDropRandomizer.on':
+                        if (!('enemyDropRandomizer' in result)) {
+                            result.enemyDropRandomizer = {}
+                        }
+                        if (!('on' in result.enemyDropRandomizer)) {
+                            result.enemyDropRandomizer.on = true
                         }
                         break
                     case 'gearRandomizer.on':

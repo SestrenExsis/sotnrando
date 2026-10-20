@@ -133,6 +133,15 @@ const argv = yargs(process.argv.slice(2))
             if ('seed' in argv) {
                 shufflerOptions.seed = argv.seed
             }
+            if ('enemyDropRandomizer' in argv) {
+                shufflerOptions.enemyDropRandomizer = {}
+                if (('on' in argv.enemyDropRandomizer)) {
+                    shufflerOptions.enemyDropRandomizer.on = argv.enemyDropRandomizer.on
+                }
+                if ('seed' in argv.enemyDropRandomizer) {
+                    shufflerOptions.enemyDropRandomizer.seed = argv.enemyDropRandomizer.seed
+                }
+            }
             if ('gearRandomizer' in argv) {
                 shufflerOptions.gearRandomizer = {}
                 if (('on' in argv.gearRandomizer)) {
