@@ -171,7 +171,7 @@
         itemAlucardSword: 251,
         itemMablungSword: 252,
         itemBadelaire: 253,
-        specialSwordFamiliar: 254,
+        // specialSwordFamiliar: 254,
         itemGreatSword: 255,
         itemMace: 256,
         itemMorningstar: 257,

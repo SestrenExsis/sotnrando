@@ -50,6 +50,15 @@ const argv = yargs(process.argv.slice(2))
                 describe: 'Seed to provide for randomization',
                 type: 'string',
             })
+        // Enemy drop randomizer options
+            .option('enemyDropRandomizer.on', {
+                describe: 'Whether or not to randomize enemy drops; if disabled, all other options in this category are ignored',
+                type: 'boolean',
+            })
+            .option('enemyDropRandomizer.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the enemy drop randomizer',
+                type: 'string',
+            })
         // Hinter options
             .option('hinter.seedName', {
                 describe: 'Whether or not to display the seed value on the file select screen',
@@ -64,6 +73,24 @@ const argv = yargs(process.argv.slice(2))
             .option('hinter.stageLinks', {
                 describe: 'Whether or not to add a label identifying each pair of loading rooms on the castle map; will only apply to loading room pairs that do not occupy the same map position already',
                 type: 'boolean',
+            })
+        // Gear randomizer options
+            .option('gearRandomizer.on', {
+                describe: 'Whether or not to randomize starting gear; if disabled, all other options in this category are ignored',
+                type: 'boolean',
+            })
+            .option('gearRandomizer.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the gear randomizer',
+                type: 'string',
+            })
+        // Item randomizer options
+            .option('itemRandomizer.on', {
+                describe: 'Whether or not to randomize found items; if disabled, all other options in this category are ignored',
+                type: 'boolean',
+            })
+            .option('itemRandomizer.seed', {
+                describe: 'If supplied, this seed is always used for supplying randomness to the item randomizer',
+                type: 'string',
             })
         // Music shuffler options
             .option('musicShuffler.on', {
@@ -161,6 +188,15 @@ const argv = yargs(process.argv.slice(2))
                 }
                 if (('stageLinks' in argv.hinter)) {
                     shufflerOptions.hinter.stageLinks = argv.hinter.stageLinks
+                }
+            }
+            if ('itemRandomizer' in argv) {
+                shufflerOptions.itemRandomizer = {}
+                if (('on' in argv.itemRandomizer)) {
+                    shufflerOptions.itemRandomizer.on = argv.itemRandomizer.on
+                }
+                if ('seed' in argv.itemRandomizer) {
+                    shufflerOptions.itemRandomizer.seed = argv.itemRandomizer.seed
                 }
             }
             if ('musicShuffler' in argv) {

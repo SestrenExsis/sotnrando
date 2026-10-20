@@ -56,13 +56,13 @@
                                 <label for="enemyDropRandomizer.on">Randomize enemy drops?</label>
                             </div>
                             <div>
-                                <input name="gearRandomizer.on" type="checkbox" checked />
-                                <label for="gearRandomizer.on">Randomize starting gear?</label>
+                                <input name="itemRandomizer.on" type="checkbox" checked />
+                                <label for="itemRandomizer.on">Randomize items?</label>
                             </div>
-                            <!-- <div>
-                                <input name="rewardShuffler.shuffleItems" type="checkbox" checked />
-                                <label for="rewardShuffler.shuffleItems">Shuffle items?</label>
-                            </div> -->
+                            <div>
+                                <input name="gearRandomizer.on" type="checkbox" checked />
+                                <label for="gearRandomizer.on">Randomize gear?</label>
+                            </div>
                             <div>
                                 <input name="rewardShuffler.on" type="checkbox" checked />
                                 <label for="rewardShuffler.on">Shuffle relics?</label>
@@ -159,6 +159,7 @@
     <script src="common.js"></script>
     <script src="enemy-drop-randomizer.js"></script>
     <script src="gear-randomizer.js"></script>
+    <script src="item-randomizer.js"></script>
     <script src="music-shuffler.js"></script>
     <script src="reward-shuffler.js"></script>
     <script src="room-shuffler.js"></script>
@@ -228,6 +229,14 @@
                         }
                         if (!('on' in result.gearRandomizer)) {
                             result.gearRandomizer.on = true
+                        }
+                        break
+                    case 'itemRandomizer.on':
+                        if (!('itemRandomizer' in result)) {
+                            result.itemRandomizer = {}
+                        }
+                        if (!('on' in result.itemRandomizer)) {
+                            result.itemRandomizer.on = true
                         }
                         break
                     case 'musicShuffler.on':

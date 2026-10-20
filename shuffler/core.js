@@ -14,6 +14,7 @@
         common = self.sotnShuffler.common
         enemyDropRandomizer = self.sotnShuffler.enemyDropRandomizer
         gearRandomizer = self.sotnShuffler.gearRandomizer
+        itemRandomizer = self.sotnShuffler.itemRandomizer
         musicShuffler = self.sotnShuffler.musicShuffler
         rewardShuffler = self.sotnShuffler.rewardShuffler
         roomShuffler = self.sotnShuffler.roomShuffler
@@ -24,6 +25,7 @@
         common = require('./common')
         enemyDropRandomizer = require('./enemy-drop-randomizer')
         gearRandomizer = require('./gear-randomizer')
+        itemRandomizer = require('./item-randomizer')
         musicShuffler = require('./music-shuffler')
         rewardShuffler = require('./reward-shuffler')
         roomShuffler = require('./room-shuffler')
@@ -5992,6 +5994,13 @@
             const seed = shufflerOptions.gearRandomizer.seed ?? (result.seeds.seedName + '.gearRandomizer')
             const gearChanges = gearRandomizer.randomizeGear(seed)
             result.changes.push(gearRandomizer.getGearChanges(gearChanges))
+        }
+        // Randomize items
+        if (shufflerOptions?.itemRandomizer?.on ?? false) {
+            console.log(' ... Randomize gear')
+            const seed = shufflerOptions.itemRandomizer.seed ?? (result.seeds.seedName + '.itemRandomizer')
+            const itemsChanges = itemRandomizer.randomizeItems(seed)
+            result.changes.push(itemRandomizer.getItemsChanges(itemsChanges.locations))
         }
         // Shuffle music
         if (shufflerOptions?.musicShuffler?.on ?? false) {
