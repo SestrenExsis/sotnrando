@@ -579,23 +579,23 @@
     }
 
     function getSeedName(seed) {
-        const MAX_BYTES = 32
         const rng = seedrandom(seed)
+        const MAX_BYTES = 32
+        const MIN_DIGITS = 3
+        const MAX_DIGITS = 9
         const adjective = WORDS.adjectives.at(Math.floor(rng() * WORDS.adjectives.length))
         const noun = WORDS.nouns.at(Math.floor(rng() * WORDS.nouns.length))
         let result = adjective.at(0).toUpperCase() + adjective.slice(1) + noun.at(0).toUpperCase() + noun.slice(1)
-        // NOTE(sestren): The byte count calculation naively assumes that adjectives/nouns will only contain a-z or A-Z characters
-        let byteCount = result.length
-        const maxDigits = 3 + Math.floor(rng() * 8)
-        for (let i = 0; i < maxDigits; i++) {
-            // NOTE(sestren): Subtract 2 to ensure enough room for the digit that's about to be written
-            // NOTE(sestren): Subtract 1 to leave room for the null terminator of the string
-            if (byteCount >= (MAX_BYTES - 2 - 1)) {
-                break
-            }
+        // NOTE(sestren): The byte count calculation naively assumes that adjectives/nouns will only contain 1-byte characters
+        // NOTE(sestren): The byte count calculation includes an additional byte for the null terminator
+        let byteCount = result.length + 1
+        const maxDigitsAllowed = Math.min(MAX_DIGITS, Math.floor((MAX_BYTES - byteCount) / 2))
+        const digitCount = MIN_DIGITS + Math.floor(rng() * (1 + maxDigitsAllowed - MIN_DIGITS))
+        for (let i = 0; i < digitCount; i++) {
             result += Math.floor(rng() * 10)
             byteCount += 2
         }
+        // console.log(MIN_DIGITS, maxDigitsAllowed, digitCount, byteCount, result)
         return result
     }
 
