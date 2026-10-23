@@ -1837,24 +1837,27 @@
             'relicPowerOfMist',
             'relicSoulOfBat',
         ]
-        rewards.bonus = [ // Out-of-logic (except for Rings and Soul of Wolf)
-            'itemGoldRing',
-            'itemSilverRing',
+        rewards.bonus = [ // Out-of-logic (except for Soul of Wolf), prioritized over filler
             'relicGasCloud',
             'relicHolySymbol',
             'relicPowerOfWolf',
             'relicSkillOfWolf',
             'relicSoulOfWolf',
         ]
-        rewards.filler = common.shuffleArray(rng, [ // Shuffled, out-of-logic
+        rewards.filler = common.shuffleArray(rng, [ // Out-of-logic (except for Silver Ring)
             'relicBatCard',
             'relicFaerieCard',
             'relicFaerieScroll',
             'relicGhostCard',
             'relicSpiritOrb',
             'relicSwordCard',
+            'itemSilverRing',
         ])
-        const rewardCount = rewards.main.length + rewards.bonus.length + rewards.filler.length + Object.entries(result.locations).length
+        // Gold Ring is prioritized last
+        rewards.final = [
+            'itemGoldRing',
+        ]
+        const rewardCount = rewards.main.length + rewards.bonus.length + rewards.filler.length + rewards.final.length + Object.entries(result.locations).length
         rewards.progression = new Map()
         rewards.main
         .forEach((rewardName) => {
@@ -1867,6 +1870,7 @@
             main: [],
             bonus: [],
             filler: [],
+            final: [],
         }
         // Place rewards on current layer
         let debug = {
@@ -1903,6 +1907,10 @@
                 while (rewards.filler.length > 0) {
                     currentLayerRewards.push(rewards.filler.pop())
                     assignments.filler.push(currentLayerRewards.at(-1))
+                }
+                while (rewards.final.length > 0) {
+                    currentLayerRewards.push(rewards.final.pop())
+                    assignments.final.push(currentLayerRewards.at(-1))
                 }
             }
             else {
@@ -1981,6 +1989,11 @@
                             continue
                         }
                     }
+                    if (rewards.final.length > 0) {
+                        currentLayerRewards.push(rewards.final.pop())
+                        assignments.final.push(currentLayerRewards.at(-1))
+                        continue
+                    }
                     // console.log({
                     //     resultLocations: result.locations,
                     //     availableChecks: availableChecks,
@@ -2054,7 +2067,8 @@
         if (
             rewards.main.length > 0 ||
             rewards.bonus.length > 0 ||
-            rewards.filler.length > 0
+            rewards.filler.length > 0 ||
+            rewards.final.length > 0
         ) {
             // console.log('--> 2099 (rewards.xxx.length > 0)')
             result.valid = false
