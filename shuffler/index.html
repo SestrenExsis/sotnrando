@@ -205,14 +205,41 @@
             for (const element of formData) {
                 switch (element.at(0)) {
                     case 'clockFaceDisplay':
-                        if (!('patcher' in result)) {
-                            result.patcher = {}
-                        }
-                        if (!('on' in result.patcher)) {
-                            result.patcher.on = true
-                        }
                         if (element.at(1) === 'minutesAndSeconds') {
+                            if (!('patcher' in result)) {
+                                result.patcher = {}
+                            }
+                            if (!('on' in result.patcher)) {
+                                result.patcher.on = true
+                            }
+                            if (!('list' in result.patcher)) {
+                                result.patcher.list = []
+                            }
                             result.patcher.list.push('showMinutesAndSecondsInClockRoom')
+                        }
+                        break
+                    case 'hinter.options':
+                        if (!('hinter' in result)) {
+                            result.hinter = {}
+                        }
+                        if (!('options' in result.hinter)) {
+                            result.hinter.options = true
+                        }
+                        break
+                    case 'hinter.seedName':
+                        if (!('hinter' in result)) {
+                            result.hinter = {}
+                        }
+                        if (!('seedName' in result.hinter)) {
+                            result.hinter.seedName = true
+                        }
+                        break
+                    case 'hinter.stageLinks':
+                        if (!('hinter' in result)) {
+                            result.hinter = {}
+                        }
+                        if (!('stageLinks' in result.hinter)) {
+                            result.hinter.stageLinks = true
                         }
                         break
                     case 'enemyDropRandomizer.on':
